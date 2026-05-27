@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
 
@@ -8,68 +8,377 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Scanner FM13</title>
+<title>Scanner Industrial FM13</title>
 
 <script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
 
 <style>
 
-body{
+*{
     margin:0;
-    background:black;
-    overflow:hidden;
-    font-family:Arial;
+    padding:0;
+    box-sizing:border-box;
 }
+
+body{
+
+    background:#05080d;
+    overflow:hidden;
+    font-family:'Segoe UI',Arial,sans-serif;
+    color:white;
+
+}
+
+/* VIDEO */
 
 #scanner{
+
+    position:fixed;
+    inset:0;
     width:100vw;
     height:100vh;
+    overflow:hidden;
+
 }
 
-#linea{
+/* OSCURECER */
+
+.overlay{
+
     position:fixed;
-    top:50%;
-    left:10%;
-    width:80%;
-    height:3px;
-    background:red;
-    z-index:999;
+    inset:0;
+
+    background:
+    linear-gradient(
+        to bottom,
+        rgba(0,0,0,.75) 0%,
+        rgba(0,0,0,.15) 35%,
+        rgba(0,0,0,.15) 65%,
+        rgba(0,0,0,.75) 100%
+    );
+
+    z-index:5;
+
 }
+
+/* MARCO SCAN */
+
+.scan-box{
+
+    position:fixed;
+
+    width:80vw;
+    height:28vh;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    border:2px solid rgba(0,255,180,.35);
+
+    border-radius:18px;
+
+    box-shadow:
+    0 0 30px rgba(0,255,180,.15),
+    inset 0 0 20px rgba(0,255,180,.08);
+
+    z-index:10;
+
+    overflow:hidden;
+
+}
+
+/* ESQUINAS FUTURISTAS */
+
+.corner{
+
+    position:absolute;
+    width:40px;
+    height:40px;
+    border-color:#00ffc3;
+    z-index:20;
+
+}
+
+.tl{
+    top:0;
+    left:0;
+    border-top:5px solid #00ffc3;
+    border-left:5px solid #00ffc3;
+}
+
+.tr{
+    top:0;
+    right:0;
+    border-top:5px solid #00ffc3;
+    border-right:5px solid #00ffc3;
+}
+
+.bl{
+    bottom:0;
+    left:0;
+    border-bottom:5px solid #00ffc3;
+    border-left:5px solid #00ffc3;
+}
+
+.br{
+    bottom:0;
+    right:0;
+    border-bottom:5px solid #00ffc3;
+    border-right:5px solid #00ffc3;
+}
+
+/* LINEA LASER */
+
+#linea{
+
+    position:absolute;
+    left:0;
+    width:100%;
+    height:3px;
+
+    background:
+    linear-gradient(
+        90deg,
+        transparent,
+        #00ffc3,
+        #00ffc3,
+        transparent
+    );
+
+    box-shadow:
+    0 0 15px #00ffc3,
+    0 0 30px #00ffc3;
+
+    animation:scan 2s linear infinite;
+
+}
+
+@keyframes scan{
+
+    0%{
+        top:0%;
+    }
+
+    50%{
+        top:95%;
+    }
+
+    100%{
+        top:0%;
+    }
+
+}
+
+/* HUD SUPERIOR */
+
+.topbar{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+    right:0;
+
+    height:75px;
+
+    background:
+    linear-gradient(
+        to bottom,
+        rgba(0,0,0,.85),
+        rgba(0,0,0,.15)
+    );
+
+    z-index:50;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 25px;
+
+    backdrop-filter:blur(10px);
+
+}
+
+.title{
+
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:2px;
+    color:#00ffc3;
+
+    text-shadow:0 0 10px #00ffc3;
+
+}
+
+.status{
+
+    font-size:14px;
+    color:#8dfde1;
+    opacity:.85;
+
+}
+
+/* INFO */
+
+.info{
+
+    position:fixed;
+
+    bottom:40px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    background:rgba(0,0,0,.55);
+
+    border:1px solid rgba(0,255,180,.2);
+
+    border-radius:18px;
+
+    padding:18px 30px;
+
+    z-index:50;
+
+    text-align:center;
+
+    backdrop-filter:blur(12px);
+
+    box-shadow:
+    0 0 20px rgba(0,255,180,.1);
+
+}
+
+.info h2{
+
+    font-size:18px;
+    font-weight:600;
+    color:#00ffc3;
+
+    margin-bottom:8px;
+
+}
+
+.info p{
+
+    color:#d8d8d8;
+    font-size:14px;
+
+}
+
+/* RESULTADO */
 
 #resultado{
 
     position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
 
-    background:white;
+    inset:0;
 
-    padding:20px;
+    background:rgba(0,0,0,.92);
 
     z-index:9999;
 
     display:none;
 
+    justify-content:center;
+    align-items:center;
+
+}
+
+.card{
+
+    width:90%;
+    max-width:500px;
+
+    background:#0e141c;
+
+    border:1px solid rgba(0,255,180,.25);
+
+    border-radius:24px;
+
+    padding:35px;
+
     text-align:center;
+
+    box-shadow:
+    0 0 40px rgba(0,255,180,.15);
+
+}
+
+.card h1{
+
+    color:#00ffc3;
+    margin-bottom:25px;
+    letter-spacing:1px;
 
 }
 
 #codigo{
 
-    width:95%;
-    font-size:28px;
+    width:100%;
+
+    background:#05080d;
+
+    border:1px solid rgba(0,255,180,.25);
+
+    border-radius:14px;
+
+    color:white;
+
+    font-size:24px;
+
     text-align:center;
-    padding:10px;
+
+    padding:18px;
+
+    margin-bottom:20px;
 
 }
 
-button{
+.btn{
 
-    width:95%;
-    padding:20px;
-    font-size:24px;
-    margin-top:15px;
+    width:100%;
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:18px;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    margin-top:12px;
+
+    transition:.25s;
+
+}
+
+.btn-copy{
+
+    background:#00ffc3;
+    color:#041010;
+
+}
+
+.btn-back{
+
+    background:#1a2430;
+    color:white;
+
+}
+
+.btn:hover{
+
+    transform:scale(1.02);
+
+    box-shadow:
+    0 0 20px rgba(0,255,180,.35);
 
 }
 
@@ -79,27 +388,70 @@ button{
 
 <body>
 
-<div id="linea"></div>
-
 <div id="scanner"></div>
+
+<div class="overlay"></div>
+
+<div class="topbar">
+
+    <div class="title">
+        INDUSTRIAL SCANNER
+    </div>
+
+    <div class="status">
+        READY TO SCAN
+    </div>
+
+</div>
+
+<div class="scan-box">
+
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div id="linea"></div>
+
+</div>
+
+<div class="info">
+
+    <h2>ESCANEA EL CÓDIGO</h2>
+
+    <p>
+        Coloca el código de barras dentro del área iluminada
+    </p>
+
+</div>
 
 <div id="resultado">
 
-    <h2>Código Detectado</h2>
+    <div class="card">
 
-    <input
-        type="text"
-        id="codigo"
-        readonly
-    >
+        <h1>CÓDIGO DETECTADO</h1>
 
-    <button onclick="copiarCodigo()">
-        COPIAR CÓDIGO
-    </button>
+        <input
+            type="text"
+            id="codigo"
+            readonly
+        >
 
-    <button onclick="volverFM()">
-        REGRESAR A FILEMAKER
-    </button>
+        <button
+            class="btn btn-copy"
+            onclick="copiarCodigo()"
+        >
+            COPIAR CÓDIGO
+        </button>
+
+        <button
+            class="btn btn-back"
+            onclick="volverFM()"
+        >
+            REGRESAR A FILEMAKER
+        </button>
+
+    </div>
 
 </div>
 
@@ -176,33 +528,21 @@ Quagga.onDetected(function(result) {
 
     navigator.clipboard.writeText(codigo);
 
-    alert(
-        "Código copiado automáticamente:\n\n" +
-        codigo
-    );
+    document.getElementById("resultado").style.display = "flex";
+
+    document.getElementById("codigo").value = codigo;
 
 });
 
+
 function copiarCodigo(){
 
-    let input =
-    document.getElementById('codigo');
+    let codigo =
+    document.getElementById("codigo").value;
 
-    input.select();
+    navigator.clipboard.writeText(codigo);
 
-    input.setSelectionRange(
-        0,
-        99999
-    );
-
-    navigator.clipboard.writeText(
-        input.value
-    );
-
-    alert(
-        "Código copiado:\n\n" +
-        input.value
-    );
+    alert("Código copiado");
 
 }
 
