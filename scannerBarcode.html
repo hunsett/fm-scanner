@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Scanner</title>
+
+<script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
+
+<style>
+
+body{
+    margin:0;
+    background:black;
+    overflow:hidden;
+    font-family:Arial;
+}
+
+#scanner{
+    width:100vw;
+    height:100vh;
+}
+
+#mensaje{
+    position:fixed;
+    top:20px;
+    left:0;
+    right:0;
+    text-align:center;
+    color:white;
+    font-size:24px;
+    z-index:999;
+}
+
+#linea{
+    position:fixed;
+    top:50%;
+    left:10%;
+    width:80%;
+    height:2px;
+    background:red;
+    z-index:999;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="mensaje">
+Escanea un código
+</div>
+
+<div id="linea"></div>
+
+<div id="scanner"></div>
+
+<script>
+
+let detectado = false;
+
+Quagga.init({
+
+    inputStream : {
+        name : "Live",
+        type : "LiveStream",
+        target: document.querySelector('#scanner'),
+
+        constraints: {
+            facingMode: "environment",
+            width: 1280,
+            height: 720
+        }
+    },
+
+    locator: {
+        patchSize: "medium",
+        halfSample: true
+    },
+
+    numOfWorkers: 2,
+
+    decoder : {
+        readers : [
+            "code_128_reader",
+            "ean_reader",
+            "ean_8_reader",
+            "code_39_reader",
+            "upc_reader"
+        ]
+    },
+
+    locate: true
+
+}, function(err) {
+
+    if (err) {
+
+        alert("Error cámara: " + err);
+        return;
+
+    }
+
+    Quagga.start();
+
+});
+
+Quagga.onDetected(function(result) {
+
+    if(detectado) return;
+
+    detectado = true;
+
+    let codigo = result.codeResult.code;
+
+    Quagga.stop();
+
+    alert("Código leído: " + codigo);
+
+    /*
+    REGRESAR A FILEMAKER
+    */
+
+    window.location =
+    "fmp://$/TUARCHIVO?script=RECIBIR_CODIGO&param=" +
+    encodeURIComponent(codigo);
+
+});
+
+</script>
+
+</body>
+</html>
