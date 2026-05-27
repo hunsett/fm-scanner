@@ -8,9 +8,9 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Scanner Industrial FM13</title>
+<title>Industrial Scanner PRO</title>
 
-<script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
+<script src="https://unpkg.com/@zxing/library@latest"></script>
 
 <style>
 
@@ -22,26 +22,30 @@ content="width=device-width, initial-scale=1.0">
 
 body{
 
-    background:#05080d;
+    background:#030507;
     overflow:hidden;
-    font-family:'Segoe UI',Arial,sans-serif;
+    font-family:'Segoe UI',sans-serif;
     color:white;
 
 }
 
 /* VIDEO */
 
-#scanner{
+video{
 
     position:fixed;
     inset:0;
+
     width:100vw;
     height:100vh;
-    overflow:hidden;
+
+    object-fit:cover;
+
+    z-index:1;
 
 }
 
-/* OSCURECER */
+/* OVERLAY */
 
 .overlay{
 
@@ -51,90 +55,87 @@ body{
     background:
     linear-gradient(
         to bottom,
-        rgba(0,0,0,.75) 0%,
-        rgba(0,0,0,.15) 35%,
-        rgba(0,0,0,.15) 65%,
-        rgba(0,0,0,.75) 100%
+        rgba(0,0,0,.75),
+        rgba(0,0,0,.15),
+        rgba(0,0,0,.75)
     );
 
     z-index:5;
 
 }
 
-/* MARCO SCAN */
+/* SCAN BOX */
 
 .scan-box{
 
     position:fixed;
 
-    width:80vw;
-    height:28vh;
+    width:82vw;
+    height:30vh;
 
     left:50%;
     top:50%;
 
     transform:translate(-50%,-50%);
 
-    border:2px solid rgba(0,255,180,.35);
+    border-radius:24px;
 
-    border-radius:18px;
+    border:2px solid rgba(0,255,200,.25);
 
     box-shadow:
-    0 0 30px rgba(0,255,180,.15),
-    inset 0 0 20px rgba(0,255,180,.08);
-
-    z-index:10;
+    0 0 40px rgba(0,255,200,.12),
+    inset 0 0 25px rgba(0,255,200,.08);
 
     overflow:hidden;
 
+    z-index:10;
+
 }
 
-/* ESQUINAS FUTURISTAS */
+/* CORNERS */
 
 .corner{
 
     position:absolute;
-    width:40px;
-    height:40px;
-    border-color:#00ffc3;
-    z-index:20;
+    width:45px;
+    height:45px;
 
 }
 
 .tl{
     top:0;
     left:0;
-    border-top:5px solid #00ffc3;
-    border-left:5px solid #00ffc3;
+    border-top:5px solid #00ffd0;
+    border-left:5px solid #00ffd0;
 }
 
 .tr{
     top:0;
     right:0;
-    border-top:5px solid #00ffc3;
-    border-right:5px solid #00ffc3;
+    border-top:5px solid #00ffd0;
+    border-right:5px solid #00ffd0;
 }
 
 .bl{
     bottom:0;
     left:0;
-    border-bottom:5px solid #00ffc3;
-    border-left:5px solid #00ffc3;
+    border-bottom:5px solid #00ffd0;
+    border-left:5px solid #00ffd0;
 }
 
 .br{
     bottom:0;
     right:0;
-    border-bottom:5px solid #00ffc3;
-    border-right:5px solid #00ffc3;
+    border-bottom:5px solid #00ffd0;
+    border-right:5px solid #00ffd0;
 }
 
-/* LINEA LASER */
+/* LASER */
 
-#linea{
+.laser{
 
     position:absolute;
-    left:0;
+
     width:100%;
     height:3px;
 
@@ -142,14 +143,15 @@ body{
     linear-gradient(
         90deg,
         transparent,
-        #00ffc3,
-        #00ffc3,
+        #00ffd0,
+        white,
+        #00ffd0,
         transparent
     );
 
     box-shadow:
-    0 0 15px #00ffc3,
-    0 0 30px #00ffc3;
+    0 0 15px #00ffd0,
+    0 0 35px #00ffd0;
 
     animation:scan 2s linear infinite;
 
@@ -162,7 +164,7 @@ body{
     }
 
     50%{
-        top:95%;
+        top:96%;
     }
 
     100%{
@@ -171,7 +173,7 @@ body{
 
 }
 
-/* HUD SUPERIOR */
+/* TOP BAR */
 
 .topbar{
 
@@ -181,16 +183,7 @@ body{
     left:0;
     right:0;
 
-    height:75px;
-
-    background:
-    linear-gradient(
-        to bottom,
-        rgba(0,0,0,.85),
-        rgba(0,0,0,.15)
-    );
-
-    z-index:50;
+    height:80px;
 
     display:flex;
     align-items:center;
@@ -198,7 +191,14 @@ body{
 
     padding:0 25px;
 
-    backdrop-filter:blur(10px);
+    background:
+    linear-gradient(
+        to bottom,
+        rgba(0,0,0,.8),
+        transparent
+    );
+
+    z-index:50;
 
 }
 
@@ -207,23 +207,24 @@ body{
     font-size:22px;
     font-weight:700;
     letter-spacing:2px;
-    color:#00ffc3;
 
-    text-shadow:0 0 10px #00ffc3;
+    color:#00ffd0;
+
+    text-shadow:
+    0 0 10px #00ffd0;
 
 }
 
 .status{
 
     font-size:14px;
-    color:#8dfde1;
-    opacity:.85;
+    color:#9effea;
 
 }
 
-/* INFO */
+/* FOOTER */
 
-.info{
+.footer{
 
     position:fixed;
 
@@ -232,58 +233,53 @@ body{
 
     transform:translateX(-50%);
 
-    background:rgba(0,0,0,.55);
+    background:rgba(0,0,0,.45);
 
-    border:1px solid rgba(0,255,180,.2);
+    padding:18px 28px;
 
     border-radius:18px;
 
-    padding:18px 30px;
+    backdrop-filter:blur(12px);
+
+    border:1px solid rgba(0,255,200,.15);
 
     z-index:50;
 
     text-align:center;
 
-    backdrop-filter:blur(12px);
-
-    box-shadow:
-    0 0 20px rgba(0,255,180,.1);
-
 }
 
-.info h2{
+.footer h2{
 
+    color:#00ffd0;
     font-size:18px;
-    font-weight:600;
-    color:#00ffc3;
-
-    margin-bottom:8px;
+    margin-bottom:6px;
 
 }
 
-.info p{
+.footer p{
 
-    color:#d8d8d8;
+    color:#d0d0d0;
     font-size:14px;
 
 }
 
-/* RESULTADO */
+/* RESULT */
 
-#resultado{
+#resultBox{
 
     position:fixed;
 
     inset:0;
 
-    background:rgba(0,0,0,.92);
-
-    z-index:9999;
+    background:rgba(0,0,0,.9);
 
     display:none;
 
     justify-content:center;
     align-items:center;
+
+    z-index:999;
 
 }
 
@@ -292,26 +288,25 @@ body{
     width:90%;
     max-width:500px;
 
-    background:#0e141c;
-
-    border:1px solid rgba(0,255,180,.25);
+    background:#0d141b;
 
     border-radius:24px;
 
     padding:35px;
 
+    border:1px solid rgba(0,255,200,.2);
+
     text-align:center;
 
     box-shadow:
-    0 0 40px rgba(0,255,180,.15);
+    0 0 40px rgba(0,255,200,.15);
 
 }
 
 .card h1{
 
-    color:#00ffc3;
+    color:#00ffd0;
     margin-bottom:25px;
-    letter-spacing:1px;
 
 }
 
@@ -319,19 +314,19 @@ body{
 
     width:100%;
 
-    background:#05080d;
-
-    border:1px solid rgba(0,255,180,.25);
+    padding:18px;
 
     border-radius:14px;
 
-    color:white;
+    border:none;
 
-    font-size:24px;
+    background:#04070a;
+
+    color:white;
 
     text-align:center;
 
-    padding:18px;
+    font-size:24px;
 
     margin-bottom:20px;
 
@@ -341,11 +336,11 @@ body{
 
     width:100%;
 
+    padding:18px;
+
     border:none;
 
     border-radius:14px;
-
-    padding:18px;
 
     font-size:18px;
 
@@ -355,20 +350,20 @@ body{
 
     margin-top:12px;
 
-    transition:.25s;
+    transition:.2s;
 
 }
 
-.btn-copy{
+.btn-main{
 
-    background:#00ffc3;
+    background:#00ffd0;
     color:#041010;
 
 }
 
 .btn-back{
 
-    background:#1a2430;
+    background:#1b2630;
     color:white;
 
 }
@@ -376,9 +371,6 @@ body{
 .btn:hover{
 
     transform:scale(1.02);
-
-    box-shadow:
-    0 0 20px rgba(0,255,180,.35);
 
 }
 
@@ -388,18 +380,18 @@ body{
 
 <body>
 
-<div id="scanner"></div>
+<video id="video" autoplay playsinline></video>
 
 <div class="overlay"></div>
 
 <div class="topbar">
 
     <div class="title">
-        INDUSTRIAL SCANNER
+        INDUSTRIAL SCANNER PRO
     </div>
 
     <div class="status">
-        READY TO SCAN
+        READY
     </div>
 
 </div>
@@ -411,21 +403,21 @@ body{
     <div class="corner bl"></div>
     <div class="corner br"></div>
 
-    <div id="linea"></div>
+    <div class="laser"></div>
 
 </div>
 
-<div class="info">
+<div class="footer">
 
     <h2>ESCANEA EL CÓDIGO</h2>
 
     <p>
-        Coloca el código de barras dentro del área iluminada
+        Mantén el código dentro del área iluminada
     </p>
 
 </div>
 
-<div id="resultado">
+<div id="resultBox">
 
     <div class="card">
 
@@ -438,7 +430,7 @@ body{
         >
 
         <button
-            class="btn btn-copy"
+            class="btn btn-main"
             onclick="copiarCodigo()"
         >
             COPIAR CÓDIGO
@@ -457,88 +449,110 @@ body{
 
 <script>
 
-let detectado = false;
+const codeReader =
+new ZXing.BrowserMultiFormatReader();
 
-Quagga.init({
+const video =
+document.getElementById('video');
 
-    inputStream : {
+let ultimoCodigo = "";
+let confirmaciones = 0;
+let bloqueado = false;
 
-        name : "Live",
-        type : "LiveStream",
+async function iniciarScanner(){
 
-        target: document.querySelector('#scanner'),
+    try{
 
-        constraints: {
+        const stream =
+        await navigator.mediaDevices.getUserMedia({
 
-            facingMode: "environment",
-            width: 1280,
-            height: 720
+            video:{
+                facingMode:"environment",
+                width:{ideal:1920},
+                height:{ideal:1080},
+                focusMode:"continuous"
+            },
 
-        }
+            audio:false
 
-    },
+        });
 
-    locator: {
+        video.srcObject = stream;
 
-        patchSize: "medium",
-        halfSample: true
+        codeReader.decodeFromVideoDevice(
+            null,
+            'video',
+            (result, err) => {
 
-    },
+                if(bloqueado) return;
 
-    numOfWorkers: 2,
+                if(result){
 
-    decoder : {
+                    let codigo =
+                    result.getText();
 
-        readers : [
+                    /* VALIDACION DOBLE */
 
-            "code_128_reader",
-            "ean_reader",
-            "ean_8_reader",
-            "code_39_reader",
-            "upc_reader"
+                    if(codigo === ultimoCodigo){
 
-        ]
+                        confirmaciones++;
 
-    },
+                    }else{
 
-    locate: true
+                        ultimoCodigo = codigo;
+                        confirmaciones = 1;
 
-}, function(err) {
+                    }
 
-    if (err) {
+                    /* NECESITA LEERSE 2 VECES IGUAL */
 
-        alert(err);
-        return;
+                    if(confirmaciones >= 2){
+
+                        bloqueado = true;
+
+                        detectarCodigo(codigo);
+
+                    }
+
+                }
+
+            }
+        );
+
+    }catch(e){
+
+        alert(
+            "Error de cámara:\n" + e
+        );
 
     }
 
-    Quagga.start();
+}
 
-});
+function detectarCodigo(codigo){
 
-Quagga.onDetected(function(result) {
+    navigator.vibrate(200);
 
-    if(detectado) return;
-
-    detectado = true;
-
-    let codigo = result.codeResult.code;
-
-    Quagga.stop();
+    reproducirBeep();
 
     navigator.clipboard.writeText(codigo);
 
-    document.getElementById("resultado").style.display = "flex";
+    document.getElementById(
+        "codigo"
+    ).value = codigo;
 
-    document.getElementById("codigo").value = codigo;
+    document.getElementById(
+        "resultBox"
+    ).style.display = "flex";
 
-});
-
+}
 
 function copiarCodigo(){
 
     let codigo =
-    document.getElementById("codigo").value;
+    document.getElementById(
+        "codigo"
+    ).value;
 
     navigator.clipboard.writeText(codigo);
 
@@ -551,6 +565,42 @@ function volverFM(){
     history.back();
 
 }
+
+function reproducirBeep(){
+
+    let audioCtx =
+    new(window.AudioContext ||
+    window.webkitAudioContext)();
+
+    let oscillator =
+    audioCtx.createOscillator();
+
+    let gainNode =
+    audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+
+    gainNode.connect(
+        audioCtx.destination
+    );
+
+    oscillator.frequency.value = 1200;
+
+    oscillator.type = "sine";
+
+    gainNode.gain.value = 0.1;
+
+    oscillator.start();
+
+    setTimeout(() => {
+
+        oscillator.stop();
+
+    },120);
+
+}
+
+iniciarScanner();
 
 </script>
 
