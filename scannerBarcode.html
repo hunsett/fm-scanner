@@ -121,6 +121,10 @@ Quagga.onDetected(function(result) {
 
     alert("Código leído: " + codigo);
 
+window.location =
+"http://192.168.6.1/fmi/webd/#CODIGO=" +
+encodeURIComponent(codigo);
+
     localStorage.setItem("scanner_codigo", codigo);
 
     window.history.back();
