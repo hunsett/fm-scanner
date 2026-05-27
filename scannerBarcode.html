@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Scanner</title>
+<title>Scanner FM13</title>
 
 <script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
 
@@ -24,25 +26,51 @@ body{
     height:100vh;
 }
 
-#mensaje{
-    position:fixed;
-    top:20px;
-    left:0;
-    right:0;
-    text-align:center;
-    color:white;
-    font-size:24px;
-    z-index:999;
-}
-
 #linea{
     position:fixed;
     top:50%;
     left:10%;
     width:80%;
-    height:2px;
+    height:3px;
     background:red;
     z-index:999;
+}
+
+#resultado{
+
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+
+    background:white;
+
+    padding:20px;
+
+    z-index:9999;
+
+    display:none;
+
+    text-align:center;
+
+}
+
+#codigo{
+
+    width:95%;
+    font-size:28px;
+    text-align:center;
+    padding:10px;
+
+}
+
+button{
+
+    width:95%;
+    padding:20px;
+    font-size:24px;
+    margin-top:15px;
+
 }
 
 </style>
@@ -51,13 +79,29 @@ body{
 
 <body>
 
-<div id="mensaje">
-Escanea un código
-</div>
-
 <div id="linea"></div>
 
 <div id="scanner"></div>
+
+<div id="resultado">
+
+    <h2>Código Detectado</h2>
+
+    <input
+        type="text"
+        id="codigo"
+        readonly
+    >
+
+    <button onclick="copiarCodigo()">
+        COPIAR CÓDIGO
+    </button>
+
+    <button onclick="volverFM()">
+        REGRESAR A FILEMAKER
+    </button>
+
+</div>
 
 <script>
 
@@ -66,32 +110,43 @@ let detectado = false;
 Quagga.init({
 
     inputStream : {
+
         name : "Live",
         type : "LiveStream",
+
         target: document.querySelector('#scanner'),
 
         constraints: {
+
             facingMode: "environment",
             width: 1280,
             height: 720
+
         }
+
     },
 
     locator: {
+
         patchSize: "medium",
         halfSample: true
+
     },
 
     numOfWorkers: 2,
 
     decoder : {
+
         readers : [
+
             "code_128_reader",
             "ean_reader",
             "ean_8_reader",
             "code_39_reader",
             "upc_reader"
+
         ]
+
     },
 
     locate: true
@@ -100,7 +155,7 @@ Quagga.init({
 
     if (err) {
 
-        alert("Error cámara: " + err);
+        alert(err);
         return;
 
     }
@@ -119,18 +174,53 @@ Quagga.onDetected(function(result) {
 
     Quagga.stop();
 
-    alert("Código leído: " + codigo);
+    document.getElementById(
+        'resultado'
+    ).style.display = 'block';
 
-    sessionStorage.setItem(
-        "codigo_barras",
-        codigo
+    document.getElementById(
+        'codigo'
+    ).value = codigo;
+
+    document.getElementById(
+        'codigo'
+    ).select();
+
+    copiarCodigo();
+
+});
+
+function copiarCodigo(){
+
+    let input =
+    document.getElementById('codigo');
+
+    input.select();
+
+    input.setSelectionRange(
+        0,
+        99999
     );
+
+    navigator.clipboard.writeText(
+        input.value
+    );
+
+    alert(
+        "Código copiado:\n\n" +
+        input.value
+    );
+
+}
+
+function volverFM(){
 
     history.back();
 
-});
+}
 
 </script>
 
 </body>
+
 </html>
