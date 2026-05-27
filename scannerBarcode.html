@@ -174,19 +174,12 @@ Quagga.onDetected(function(result) {
 
     Quagga.stop();
 
-    document.getElementById(
-        'resultado'
-    ).style.display = 'block';
+    navigator.clipboard.writeText(codigo);
 
-    document.getElementById(
-        'codigo'
-    ).value = codigo;
-
-    document.getElementById(
-        'codigo'
-    ).select();
-
-    copiarCodigo();
+    alert(
+        "Código copiado automáticamente:\n\n" +
+        codigo
+    );
 
 });
 
