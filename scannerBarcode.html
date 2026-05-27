@@ -121,13 +121,9 @@ Quagga.onDetected(function(result) {
 
     alert("Código leído: " + codigo);
 
-    /*
-    REGRESAR A FILEMAKER
-    */
+    localStorage.setItem("scanner_codigo", codigo);
 
-    window.location =
-    "fmp://$/TUARCHIVO?script=RECIBIR_CODIGO&param=" +
-    encodeURIComponent(codigo);
+    window.history.back();
 
 });
 
