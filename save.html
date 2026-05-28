@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Guardar Código</title>
+</head>
+
+<body>
+
+Guardando...
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const codigo = params.get("code") || "";
+
+localStorage.setItem("ultimoCodigo", codigo);
+
+window.location.href = "latest.html";
+
+</script>
+
+</body>
+</html>
