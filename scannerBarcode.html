@@ -534,29 +534,10 @@ function detectarCodigo(codigo){
 
     reproducirBeep();
 
-    /* GUARDAR CODIGO */
+    window.location.href =
+    "fmp://$/TuBase?script=RECIBE_CODIGO&param=" +
+    encodeURIComponent(codigo);
 
-    localStorage.setItem(
-        "ultimoCodigo",
-        codigo
-    );
-
-    /* MOSTRAR */
-
-    document.getElementById(
-        "codigo"
-    ).value = codigo;
-
-    document.getElementById(
-        "resultBox"
-    ).style.display = "flex";
-
-    /* REDIRECCION AUTOMATICA */
-
-    setTimeout(() => {
-        window.location.href =
-        "latest.html";
-    },1500);
 }
 
 function copiarCodigo(){
