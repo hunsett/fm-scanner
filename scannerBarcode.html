@@ -535,9 +535,8 @@ function detectarCodigo(codigo){
     reproducirBeep();
 
     window.location.href =
-    "fmp://$/TuBase?script=RECIBE_CODIGO&param=" +
+    "fmp://$/ProduccionR?script=RECIBE_CODIGO&param=" +
     encodeURIComponent(codigo);
-
 }
 
 function copiarCodigo(){
@@ -554,7 +553,6 @@ function volverFM(){
 }
 
 function reproducirBeep(){
-
     let audioCtx =
     new(window.AudioContext ||
     window.webkitAudioContext)();
